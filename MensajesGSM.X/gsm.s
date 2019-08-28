@@ -7,11 +7,14 @@
 __U2RXInterrupt:
     PUSH W0
     MOV U2RXREG, W0
+    NOP
     MOV W0, U1TXREG
+    NOP
     BCLR IFS1, #U2RXIF
+    NOP
     POP W0
-    RETFIE 
-    
+    RETFIE
+
 _comandoAT:
 	MOV W0,W1
 CICLO:

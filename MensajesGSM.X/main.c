@@ -30,14 +30,6 @@
 #define EVER 1
 //#define MUESTRAS 64
 
-/********************************************************************************/
-/* DECLARACIONES GLOBALES														*/
-/********************************************************************************/
-/*DECLARACI?N DE LA ISR DEL TIMER 1 USANDO __attribute__						*/
-/********************************************************************************/
-void __attribute__((__interrupt__)) _U2RXInterrupt( void );
-
-
 //****Comandos AT****
 //Para configurar el env?o de un mensaje de bienvenida cuando est? operacional
 //char CMD_CSGT[] = "1,\"ready\"\r";
@@ -46,7 +38,7 @@ void __attribute__((__interrupt__)) _U2RXInterrupt( void );
 char CMD_AT[] = "AT\r\n";
 char CMD_ATE0[] = "ATE0\r\n";
 char CMD_AT_CMGF[] = "AT+CMGF=1\r\n";
-char CMD_AT_CMGS[] = "AT+CMGS=\"+525530444231\"\r\n"; //Agregar número telefónico del destino a 10 digitos, además de incluir la clave +52 al inicio
+char CMD_AT_CMGS[] = "AT+CMGS=\"+525530444231\"\r\n"; //Agregar nï¿½mero telefï¿½nico del destino a 10 digitos, ademï¿½s de incluir la clave +52 al inicio
 char CMD_MENSAJE[] = "Temperatura\r\n";
 
 char count;
@@ -209,24 +201,6 @@ void enviarComandoGSM(char comando[]){
     RETARDO_1s();
     RETARDO_1s();
     RETARDO_1s();
-}
-
-/********************************************************************************/
-/* DESCRICION:	ISR (INTERRUPT SERVICE ROUTINE) DEL TIMER 1						*/
-/* LA RUTINA TIENE QUE SER GLOBAL PARA SER UNA ISR								*/	
-/* SE USA PUSH.S PARA GUARDAR LOS REGISTROS W0, W1, W2, W3, C, Z, N Y DC EN LOS */
-/* REGISTROS SOMBRA																*/
-/********************************************************************************/
-void __attribute__((__interrupt__, no_auto_psv)) _U2RXInterrupt( void )
-{
-    char resp;   
-    resp = U2RXREG;
-    U1TXREG = resp;
-    
-    while(!IFS0bits.U1TXIF);
-    IFS0bits.U1TXIF = 0;
-    
-    IFS1bits.U2RXIF = 0;
 }
 
 void printUART1(char* cadena) {
