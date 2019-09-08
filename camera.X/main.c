@@ -36,13 +36,13 @@ int main(void)
     U1MODEbits.UARTEN = 1;
     U1STAbits.UTXEN = 1;
     
+    {
     U2MODEbits.UARTEN = 1;
     U2STAbits.UTXEN = 1;
 
     takePicture();
     
     for(;EVER;)
-    {
         Nop();
     }
     return 1;

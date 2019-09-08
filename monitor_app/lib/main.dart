@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'device_screen.dart';
+import 'register_screen.dart';
+import 'message_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -10,147 +13,104 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.dark,
         fontFamily: 'Montserrat',
-        primaryColor: Colors.black,
-        accentColor: Colors.white,
       ),
       debugShowCheckedModeBanner: false,
-      home: MyHomePage(title: 'Home Monitor'),
+      home: MyHomePage(),
+      routes: {
+        RegisterScreen.routeName: (context) => RegisterScreen(),
+      },
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
+  MyHomePage({Key key}) : super(key: key);
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage>
-    with SingleTickerProviderStateMixin {
-  List<Tab> deviceTabs = <Tab>[
-    Tab(
-      text: 'Oficina',
-    ),
-    Tab(
-      text: 'Casa',
+class _MyHomePageState extends State<MyHomePage> {
+  int _selectedSection = 0;
+
+  List<String> _titles = <String>['Mensajes', 'Dispositivos', 'Cuenta'];
+
+  List<Widget> _sections = <Widget>[
+    MessageScreen(),
+    DeviceScreen(),
+    Container(
+      color: Colors.black,
+      child: Center(
+        child: Text(
+          'Cuenta',
+          style: TextStyle(
+            fontSize: 28,
+          ),
+        ),
+      ),
     ),
   ];
 
-  String dropdownValue = 'One';
-
-  TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(vsync: this, length: deviceTabs.length);
+  void _onSectionSelected(int index) {
+    setState(() {
+      _selectedSection = index;
+    });
   }
 
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
+  List<Widget> _getSectionActions(int sectionId) {
+    if (sectionId == 0) {
+      return <Widget>[
+        IconButton(
+          onPressed: () {},
+          icon: Icon(Icons.camera_alt),
+        )
+      ];
+    } else if (sectionId == 1) {
+      return <Widget>[
+        IconButton(
+          onPressed: () {},
+          icon: Icon(Icons.add_circle),
+        )
+      ];
+    }
+    return <Widget>[];
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
-        centerTitle: true,
-      ),
-      body: Center(
-        child: Text(
-          'Content',
-          style: TextStyle(fontSize: 36),
-        ),
-      ),
-      drawer: Drawer(
-        child: ListView(
-          children: <Widget>[
-            Container(
-              color: Colors.black,
-              padding: EdgeInsets.all(20),
-              child: Column(
-                children: <Widget>[
-                  Text(
-                    'email@gmail.com',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  Text(
-                    '2 dispositivos',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w300,
-                    ),
-                  ),
-                ],
-              ),
+        title: Container(
+          margin: EdgeInsets.all(10),
+          child: Text(
+            _titles.elementAt(_selectedSection),
+            style: TextStyle(
+              fontSize: 28,
             ),
-            ListTile(
-              title: Text('Dispositivos'),
-              leading: Icon(Icons.devices),
-              onTap: () {},
-            ),
-            ListTile(
-              title: Text('Añadir dispostivo'),
-              leading: Icon(Icons.add),
-              onTap: () {},
-            ),
-            ListTile(
-              title: Text('Cerrar sesión'),
-              leading: Icon(Icons.cloud_off),
-              onTap: () {},
-            ),
-          ],
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        tooltip: 'Tomar fotografía',
-        child: Icon(Icons.camera_alt),
-      ),
-      bottomNavigationBar: BottomAppBar(
-        child: Container(
-          color: Colors.black,
-          height: 55,
-          child: DropdownButtonHideUnderline(
-            child: Row(
-          children: <Widget>[
-            Container(
-              width: 340,
-              margin: EdgeInsets.all(10),
-              child: DropdownButton<String>(
-                value: dropdownValue,
-                onChanged: (String newValue) {
-                  setState(() {
-                    dropdownValue = newValue;
-                  });
-                },
-                items: <String>['One', 'Two', 'Three', 'Four']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Center(
-                      child: Text(value),
-                    ),
-                  );
-                }).toList(),
-              ),
-            )
-          ],
-        ),
           ),
         ),
+        backgroundColor: Colors.black,
+        actions: _getSectionActions(_selectedSection),
+      ),
+      body: _sections.elementAt(_selectedSection),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.black,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.message),
+            title: Text('Mensajes'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.devices),
+            title: Text('Dispositivos'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            title: Text('Cuenta'),
+          ),
+        ],
+        currentIndex: _selectedSection,
+        onTap: _onSectionSelected,
       ),
     );
   }
