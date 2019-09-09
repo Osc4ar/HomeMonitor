@@ -29,22 +29,37 @@ class _MessageScreenState extends State<MessageScreen> {
                   print('Card $index tapped.');
                 },
                 child: Container(
-                  color: Colors.grey[900],
-                  height: MediaQuery.of(context).size.height / 3,
                   width: MediaQuery.of(context).size.width,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       ClipRRect(
                         borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(8.0),
-                          topRight: Radius.circular(8.0),
+                          topLeft: Radius.circular(5.0),
+                          topRight: Radius.circular(5.0),
                         ),
                         child: Image.network('https://placeimg.com/640/480/any',
-                            height: 150,
-                            fit: BoxFit.fill),
+                            height: 150, fit: BoxFit.fill),
                       ),
-                      Text(devices[index]),
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        margin: EdgeInsets.all(10.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text(
+                              'Dispositivo ${index+1}',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            Text(
+                              '10:35 AM',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),

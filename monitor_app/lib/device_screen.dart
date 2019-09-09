@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'device_settings.dart';
 
 class DeviceScreen extends StatefulWidget {
   @override
@@ -25,10 +26,15 @@ class _DeviceScreenState extends State<DeviceScreen> {
           return Container(
             margin: EdgeInsets.only(left: 10.0, right: 10.0),
             height: MediaQuery.of(context).size.height/10,
-            child: RaisedButton(
-              color: Colors.grey[900],
-              onPressed: (){},
-              child: Text(
+            child: RaisedButton.icon(
+              icon: Icon(Icons.developer_board),
+              shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50.0)),
+              onPressed: (){
+                Navigator.pushNamed(context, DeviceSettings.routeName);
+              },
+              color: Colors.cyan[800],
+              label: Text(
               devices[index],
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             ),

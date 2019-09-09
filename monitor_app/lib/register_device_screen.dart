@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class RegisterScreen extends StatefulWidget {
-  static const routeName = '/register';
+class RegisterDeviceScreen extends StatefulWidget {
+  static const routeName = '/registerDevice';
   @override
-  _RegisterScreenState createState() => _RegisterScreenState();
+  _RegisterDeviceScreenState createState() => _RegisterDeviceScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterDeviceScreenState extends State<RegisterDeviceScreen> {
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -16,7 +16,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           title: Container(
             margin: EdgeInsets.all(10),
             child: Text(
-              'Registrarse',
+              'Agregar dispositivo',
               style: TextStyle(
                 fontSize: 28,
               ),
@@ -44,7 +44,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.white, fontSize: 18),
                       decoration: InputDecoration(
-                        hintText: 'Correo electrónico',
+                        hintText: 'Nombre de dispositivo',
                         focusedBorder: InputBorder.none,
                         errorBorder: InputBorder.none,
                         border: InputBorder.none,
@@ -70,7 +70,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.white, fontSize: 18),
                       decoration: InputDecoration(
-                        hintText: 'Número de teléfono',
+                        hintText: 'Teléfono en el dipositivo',
                         focusedBorder: InputBorder.none,
                         errorBorder: InputBorder.none,
                         border: InputBorder.none,
@@ -90,7 +90,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       width: MediaQuery.of(context).size.width * 0.75,
                       height: MediaQuery.of(context).size.width / 7,
                       child: RaisedButton.icon(
-                        icon: Icon(Icons.person_add),
+                        icon: Icon(Icons.add_circle),
                         color: Colors.cyan,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(50.0)),
@@ -102,30 +102,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           }
                         },
                         label: Text(
-                          'Registrar',
+                          'Agregar',
                           style: TextStyle(fontSize: 18),
                         ),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width * 0.75,
-                    height: MediaQuery.of(context).size.width / 7,
-                    child: RaisedButton.icon(
-                      icon: Icon(Icons.account_circle),
-                      color: Colors.grey[900],
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50.0)),
-                      onPressed: () {
-                        // Validate will return true if the form is valid, or false if
-                        // the form is invalid.
-                        if (_formKey.currentState.validate()) {
-                          // Process data.
-                        }
-                      },
-                      label: Text(
-                        'Iniciar Sesión',
-                        style: TextStyle(fontSize: 18),
                       ),
                     ),
                   ),

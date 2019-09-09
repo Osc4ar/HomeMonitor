@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:monitor_app/device_settings.dart';
 import 'device_screen.dart';
 import 'register_screen.dart';
 import 'message_screen.dart';
+import 'register_device_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -13,11 +15,15 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.dark,
         fontFamily: 'Montserrat',
+        primaryColor: Colors.indigo,
+        accentColor: Colors.cyanAccent,
       ),
       debugShowCheckedModeBanner: false,
       home: MyHomePage(),
       routes: {
         RegisterScreen.routeName: (context) => RegisterScreen(),
+        RegisterDeviceScreen.routeName: (context) => RegisterDeviceScreen(),
+        DeviceSettings.routeName: (context) => DeviceSettings(),
       },
     );
   }
@@ -33,22 +39,13 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedSection = 0;
 
-  List<String> _titles = <String>['Mensajes', 'Dispositivos', 'Cuenta'];
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
+  List<String> _titles = <String>['Mensajes', 'Dispositivos'];
 
   List<Widget> _sections = <Widget>[
     MessageScreen(),
     DeviceScreen(),
-    Container(
-      color: Colors.black,
-      child: Center(
-        child: Text(
-          'Cuenta',
-          style: TextStyle(
-            fontSize: 28,
-          ),
-        ),
-      ),
-    ),
   ];
 
   void _onSectionSelected(int index) {
@@ -63,12 +60,14 @@ class _MyHomePageState extends State<MyHomePage> {
         IconButton(
           onPressed: () {},
           icon: Icon(Icons.camera_alt),
-        )
+        ),
       ];
     } else if (sectionId == 1) {
       return <Widget>[
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pushNamed(context, RegisterDeviceScreen.routeName);
+          },
           icon: Icon(Icons.add_circle),
         )
       ];
@@ -79,6 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: scaffoldKey,
       appBar: AppBar(
         title: Container(
           margin: EdgeInsets.all(10),
@@ -93,6 +93,29 @@ class _MyHomePageState extends State<MyHomePage> {
         actions: _getSectionActions(_selectedSection),
       ),
       body: _sections.elementAt(_selectedSection),
+      floatingActionButton: Visibility(
+        visible: _selectedSection == 0,
+        child: FloatingActionButton(
+          child: Icon(Icons.search),
+          onPressed: () {
+            scaffoldKey.currentState.showBottomSheet((context) => Container(
+                  color: Colors.black,
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height / 3,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Text('Fecha'),
+                    ],
+                  ),
+                ));
+          },
+          backgroundColor: Colors.white,
+          tooltip: 'Capturar fotografía',
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.black,
         items: const <BottomNavigationBarItem>[
@@ -103,10 +126,6 @@ class _MyHomePageState extends State<MyHomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.devices),
             title: Text('Dispositivos'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            title: Text('Cuenta'),
           ),
         ],
         currentIndex: _selectedSection,
