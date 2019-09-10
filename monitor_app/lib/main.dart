@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Home Monitor',
+      title: 'Monitor',
       theme: ThemeData(
         brightness: Brightness.dark,
         fontFamily: 'Montserrat',
@@ -48,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
     DeviceScreen(),
   ];
 
-  void _onSectionSelected(int index) {
+    void _onSectionSelected(int index) {
     setState(() {
       _selectedSection = index;
     });
