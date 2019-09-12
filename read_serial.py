@@ -1,11 +1,13 @@
 import serial
+import time
 
 def main():
-    ser = serial.Serial('COM7', 9600)
-    while True:
-        bytes_to_read = ser.inWaiting()
-        data = ser.read(bytes_to_read)
-        print(data)
+    ser = serial.Serial('/dev/ttyUSB0', 9600)
+    for i in range(20):
+        ser.write(b'Hola\n')
+        time.sleep(1)
+        ser.write(b'Mundo\n')
+        time.sleep(1)
 
 if __name__ == '__main__':
     main()
