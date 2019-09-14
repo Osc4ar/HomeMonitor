@@ -36,4 +36,4 @@ def upload_data(firebase, url_image):
   print(results)
 
 if __name__ == "__main__":
-    upload_file('image.jpeg')
+    upload_file('image.jpg')
