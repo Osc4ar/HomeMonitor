@@ -64,7 +64,6 @@ void onPIR(void) {
 }
 
 void takePicture(void) {
-	system("raspistill -vf -hf -o image.jpg");
-	system("python3 firebase_uploader.py");
+	system("python3 take_picture.py");
 	printf("Fotografia capturada\n");
 }

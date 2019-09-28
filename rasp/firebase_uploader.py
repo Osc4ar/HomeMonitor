@@ -1,39 +1,34 @@
 import pyrebase
-import datetime
 
 def initialize():
   config = {
-        "apiKey": "AIzaSyBcG1FA4LKArx8AXe60dZRY7gXCjaH1k24",
-        "authDomain": "apptt-2957a.firebaseapp.com",
-        "databaseURL": "https://apptt-2957a.firebaseio.com",
-        "projectId": "apptt-2957a",
-        "storageBucket": "apptt-2957a.appspot.com",
-        "messagingSenderId": "421220765302",
+    "apiKey": "AIzaSyBcG1FA4LKArx8AXe60dZRY7gXCjaH1k24",
+    "authDomain": "apptt-2957a.firebaseapp.com",
+    "databaseURL": "https://apptt-2957a.firebaseio.com",
+    "projectId": "apptt-2957a",
+    "storageBucket": "apptt-2957a.appspot.com",
+    "messagingSenderId": "421220765302",
   }
   firebase = pyrebase.initialize_app(config)
   return firebase
 
-def upload_file(filename):
+def upload_file(filename, ts):
+  uid = '0IGpb0vjhbNhZLewS3yseIbP4gc2'
   firebase = initialize()
   storage = firebase.storage()
-  myfile = open(filename,"rb")
+  myfile = open(filename, "rb")
   bytesm  = myfile.read()
-  fbupload = storage.child("/"+myfile.name).put(bytesm)
-  img_url=storage.child("/"+myfile.name).get_url(fbupload['downloadTokens'])
-  upload_data(firebase, img_url)
+  fbupload = storage.child("/" + uid + '/' + myfile.name).put(bytesm)
+  url_image = storage.child("/" + uid + '/' + myfile.name).get_url(fbupload['downloadTokens'])
+  upload_data(firebase, url_image, ts)
 
-def upload_data(firebase, url_image):
+def upload_data(firebase, url_image, ts):
+  uid = '0IGpb0vjhbNhZLewS3yseIbP4gc2'
   db = firebase.database()
-  now = datetime.datetime.now()
-  fecha = str(now.day)+"/"+ str(now.month)+"/"+str(now.year)
-  desc = "prueba TT1"
   data = {
-      "URL": url_image,
-      "Fecha" : fecha,
-      "Descripcion" : desc,
+    "deviceId" : 'Casa',
+    "photoURL": url_image,
+    "timestamp" : ts,
   }
-  results = db.child("TT/Fotos").push(data)
+  results = db.child("messages/" + uid).push(data)
   print(results)
-
-if __name__ == "__main__":
-    upload_file('image.jpg')
