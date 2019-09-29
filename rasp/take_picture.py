@@ -5,7 +5,7 @@ import firebase_uploader
 
 def take_picture():
   now = datetime.now()
-  ts = int(now.timestamp)
+  ts = int(now.timestamp())
   filename = f'{ts}.jpg'
   with picamera.PiCamera() as picam:
     picam.resolution = (1280, 720)
