@@ -10,13 +10,17 @@
 #include <arpa/inet.h>
 #include <sys/wait.h>
 #include <netinet/in.h>
-#include<wiringPi.h>
+#include <wiringPi.h>
 
 #define PIN_HALL 7
 #define PIN_PIR 3
 
 static int workInProgress = 0;
 int fd;
+short startH = 0;
+short endH = 0;
+char PIR  = 0;
+char HALL = 0;
 
 typedef struct message{
         char id;
@@ -26,26 +30,27 @@ typedef struct message{
 
 ssize_t writeCommand(char * message,char * waited,char tam);
 int readAllResponse(char *output,char *waited,char tam);
-void iniGSM();
+void iniGSM(void);
 void sendMessage(char *number, char *message);
 int config_serial ( char *, speed_t );
 void getNumber(char* number);
-void readMessages();
+void readMessages(void);
 Message getMessage(char *raw);
 void deleteMessage(char id);
-void deleteAllMessages();
+void deleteAllMessages(void);
 void printMessage(Message m);
 int processMessage(Message m);
 void setUser(char * inst, char *ptr);
-int isConfigured();
+int isConfigured(void);
 void setSchedule(char* inst);
 void createFile(char* name, char* value);
 void onHall(void);
 void onPIR(void);
 void takePicture(void);
+void getSchedule(void );
 
-int main()
-{
+int main(){
+
 	fd = config_serial( "/dev/ttyACM0", B9600 );
 	iniGSM(fd);
 	deleteAllMessages(fd);
@@ -53,9 +58,12 @@ int main()
 		readMessages(fd);
 		sleep(1);
 	}
+    getSchedule();
 	while(1){
+        workInProgress = 1;
 		readMessages(fd);
-		sleep(1);	
+        workInProgress = 0;
+		delay(2000);	
 	}
 }
 
@@ -183,7 +191,6 @@ void readMessages(){
 	}
 	memset(raw_message,0,sizeof(char)*100);			
 }
-
 Message getMessage(char *raw){
 	Message m;
 	char *ptr = strstr(raw, "+CMGL");
@@ -207,26 +214,22 @@ Message getMessage(char *raw){
 	}
 	return  m;
 }
-
 void deleteMessage(char id){
 	char delete_ins[] = "AT+CMGD=X\r\n";
 	memcpy(delete_ins + 8, &id, 1);
 	write(fd,delete_ins,sizeof(char)*12);
 	read(fd,delete_ins,sizeof(char)*12);
 }
-
 void deleteAllMessages(){
         char delete_ins[] = "AT+CMGD=1,1\r\n";
         write(fd,delete_ins,sizeof(char)*14);
         read(fd,delete_ins,sizeof(char)*14);
 }
-
 void printMessage(Message m){
 	printf("ID: %c\n",m.id);
 	printf("Number: %s\n",m.number);
 	printf("Data: %s\n",m.data);
 }
-
 int processMessage(Message m){
 	char *ptr;
 	if((ptr = strstr(m.data, "INIT"))!=NULL){
@@ -250,7 +253,7 @@ void setSchedule(char* inst){
 	char schedule [11];
 	memcpy(schedule,inst + 8, sizeof(char)*10);
 	schedule[10] = 0;
-	createFile("horario",schedule);
+	createFile("schedule",schedule);
 }
 void setUser(char * inst, char *ptr){
 	char name[30] =  "";
@@ -279,39 +282,56 @@ void createFile(char* name, char* value){
 	fclose(arch);
 }
 void onHall(void) {
-	static int previousState = -1;
-	if (!workInProgress) {
-		int currentState = digitalRead(PIN_HALL);
-		if (currentState != previousState) {
-			previousState = currentState;
-			if (currentState == LOW) {
-                char number[12];
-	            getNumber(number);
-                sendMessage(char *number, "Presencia detectada con sensor HALL")
-				workInProgress = 1;
-				takePicture();
-				workInProgress = 0;
-			}
-		}
-	}
+    if(HALL){
+        static int previousState = -1;
+        if (!workInProgress) {
+            int currentState = digitalRead(PIN_HALL);
+            if (currentState != previousState) {
+                previousState = currentState;
+                if (currentState == LOW) {
+                    char number[12];
+                    getNumber(number);
+                    sendMessage(char *number, "Presencia detectada con sensor HALL")
+                    workInProgress = 1;
+                    takePicture();
+                    workInProgress = 0;
+                }
+            }
+        }
+    }
 }
 void onPIR(void) {
-	static int previousState = -1;
-	if (!workInProgress) {
-		int currentState = digitalRead(PIN_PIR);
-		if (currentState != previousState) {
-			previousState = currentState;
-			if (currentState == LOW) {
-                char number[12];
-	            getNumber(number);
-                sendMessage(char *number, "Presencia detectada con sensor PIR")
-				workInProgress = 1;
-				takePicture();
-				workInProgress = 0;
-			}
-		}
-	}
+    if(PIR){
+        static int previousState = -1;
+        if (!workInProgress) {
+            int currentState = digitalRead(PIN_PIR);
+            if (currentState != previousState) {
+                previousState = currentState;
+                if (currentState == LOW) {
+                    char number[12];
+                    getNumber(number);
+                    sendMessage(char *number, "Presencia detectada con sensor PIR")
+                    workInProgress = 1;
+                    takePicture();
+                    workInProgress = 0;
+                }
+            }
+        }
+    }
 }
 void takePicture(void) {
 	system("python3 take_picture.py");
+}
+void getSchedule(){
+    char handle[4];
+    FILE *arch;
+	arch = fopen("schedule", "r");
+	fgets(handle, sizeof(char)*5, arch);
+    start = (int) strtol(handle, (char **)NULL, 10);
+    fgets(handle, sizeof(char)*5, arch);
+    endH = (int) strtol(handle, (char **)NULL, 10);
+    fgets(handle, sizeof(char)*2, arch);
+    PIR = (int) strtol(handle, (char **)NULL, 10);
+    fgets(handle, sizeof(char)*2, arch);
+    HALL = (int) strtol(handle, (char **)NULL, 10);
 }
