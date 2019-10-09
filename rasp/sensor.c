@@ -16,11 +16,13 @@
 #define PIN_PIR 3
 
 static int workInProgress = 0;
+static int available = 0;
 int fd;
 short startH = 0;
 short endH = 0;
 char PIR  = 0;
 char HALL = 0;
+
 
 typedef struct message{
         char id;
@@ -47,7 +49,8 @@ void createFile(char* name, char* value);
 void onHall(void);
 void onPIR(void);
 void takePicture(void);
-void getSchedule(void );
+void getSchedule(void);
+void checkSchedule();
 
 int main(){
 
@@ -60,9 +63,12 @@ int main(){
 	}
     getSchedule();
 	while(1){
+        checkSchedule();
+
         workInProgress = 1;
 		readMessages(fd);
         workInProgress = 0;
+        
 		delay(2000);	
 	}
 }
@@ -238,16 +244,15 @@ int processMessage(Message m){
 		return 1;
 	}
 	if((ptr = strstr(m.data, "PHOTO"))!=NULL){
-		//llamada a python
-                printf("PHOTO");
+		takePicture();
 		return 2;
         }
 	if((ptr = strstr(m.data, "SCHEDULE"))!=NULL){
 		setSchedule(m.data);
-                printf("SCHEDULE");
+        getSchedule();
 		return 3;
         }
-        return 0;
+    return 0;
 }
 void setSchedule(char* inst){
 	char schedule [11];
@@ -282,7 +287,7 @@ void createFile(char* name, char* value){
 	fclose(arch);
 }
 void onHall(void) {
-    if(HALL){
+    if(HALL && available){
         static int previousState = -1;
         if (!workInProgress) {
             int currentState = digitalRead(PIN_HALL);
@@ -301,7 +306,7 @@ void onHall(void) {
     }
 }
 void onPIR(void) {
-    if(PIR){
+    if(PIR && available){
         static int previousState = -1;
         if (!workInProgress) {
             int currentState = digitalRead(PIN_PIR);
@@ -334,4 +339,7 @@ void getSchedule(){
     PIR = (int) strtol(handle, (char **)NULL, 10);
     fgets(handle, sizeof(char)*2, arch);
     HALL = (int) strtol(handle, (char **)NULL, 10);
+}
+void checkSchedule(){
+    ;
 }
