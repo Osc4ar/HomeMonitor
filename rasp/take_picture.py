@@ -18,6 +18,7 @@ def take_picture(upload_info):
     picam.close()
   print(f'Fotografia capturada en {time.time()-start} segundos\n')
   upload_info['filename'] = filename
+  upload_info['timestamp'] = ts
   firebase_uploader.upload_file(upload_info)
 
 if __name__ == "__main__":
