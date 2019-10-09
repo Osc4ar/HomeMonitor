@@ -12,23 +12,24 @@ def initialize():
   firebase = pyrebase.initialize_app(config)
   return firebase
 
-def upload_file(filename, ts):
-  uid = '0IGpb0vjhbNhZLewS3yseIbP4gc2'
+def upload_file(upload_info):
+  filename = upload_info['filename']
+  uid = upload_info['uid']
   firebase = initialize()
   storage = firebase.storage()
   myfile = open(filename, "rb")
   bytesm  = myfile.read()
   fbupload = storage.child("/" + uid + '/' + myfile.name).put(bytesm)
-  url_image = storage.child("/" + uid + '/' + myfile.name).get_url(fbupload['downloadTokens'])
-  upload_data(firebase, url_image, ts)
+  upload_info['url'] = storage.child("/" + uid + '/' + myfile.name).get_url(fbupload['downloadTokens'])
+  upload(firebase, upload_info)
 
-def upload_data(firebase, url_image, ts):
-  uid = '0IGpb0vjhbNhZLewS3yseIbP4gc2'
+def upload(firebase, upload_info):
+  uid = upload_info['uid']
   db = firebase.database()
   data = {
-    "deviceId" : 'Casa',
-    "photoURL": url_image,
-    "timestamp" : ts,
+    "deviceId" : upload_info['deviceId'],
+    "photoURL": upload_info['url'],
+    "timestamp" : upload_info['timestamp'],
   }
   results = db.child("messages/" + uid).push(data)
-  print(results)
+  print(f'Informacion subida con ID: {results}')

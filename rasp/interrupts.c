@@ -22,7 +22,7 @@ int main(void) {
 	pinMode(PIN_PIR, INPUT);
 
 	wiringPiISR(PIN_HALL, INT_EDGE_FALLING, &onHall);
-	wiringPiISR(PIN_PIR, INT_EDGE_FALLING, &onPIR);
+	wiringPiISR(PIN_PIR, INT_EDGE_RISING, &onPIR);
 	
 	printf("Esperando por eventos\n");
 
@@ -48,22 +48,20 @@ void onHall(void) {
 }
 
 void onPIR(void) {
-	static int previousState = -1;
 	if (!workInProgress) {
 		int currentState = digitalRead(PIN_PIR);
-		if (currentState != previousState) {
-			previousState = currentState;
-			if (currentState == LOW) {
-				printf("\nPresencia detectada\n");
-				workInProgress = 1;
-				takePicture();
-				workInProgress = 0;
-			}
+		if (currentState == HIGH) {
+			printf("\nPresencia detectada\n");
+			workInProgress = 1;
+			takePicture();
+			workInProgress = 0;
 		}
 	}
 }
 
 void takePicture(void) {
-	system("python3 take_picture.py");
-	printf("Fotografia capturada\n");
+	FILE *takePicture;
+	takePicture = fopen("take_picture", "w");
+	fclose(takePicture);
+	delay(2000);
 }

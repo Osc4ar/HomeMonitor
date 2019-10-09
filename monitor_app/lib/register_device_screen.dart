@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sms/sms.dart';
 
 class RegisterDeviceScreen extends StatefulWidget {
   static const routeName = '/registerDevice';
@@ -8,6 +9,9 @@ class RegisterDeviceScreen extends StatefulWidget {
 
 class _RegisterDeviceScreenState extends State<RegisterDeviceScreen> {
   final _formKey = GlobalKey<FormState>();
+  String phoneNo;
+  String deviceName;
+  String uid = '0IGpb0vjhbNhZLewS3yseIbP4gc2';
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +60,9 @@ class _RegisterDeviceScreenState extends State<RegisterDeviceScreen> {
                         }
                         return null;
                       },
+                      onChanged: (value) {
+                        this.deviceName = value;
+                      },
                     ),
                   ),
                   Container(
@@ -82,6 +89,9 @@ class _RegisterDeviceScreenState extends State<RegisterDeviceScreen> {
                         }
                         return null;
                       },
+                      onChanged: (value) {
+                        phoneNo = value;
+                      },
                     ),
                   ),
                   Padding(
@@ -98,7 +108,18 @@ class _RegisterDeviceScreenState extends State<RegisterDeviceScreen> {
                           // Validate will return true if the form is valid, or false if
                           // the form is invalid.
                           if (_formKey.currentState.validate()) {
-                            // Process data.
+                            SmsSender sender = SmsSender();
+                            String address = '+525530444231';
+                            SmsMessage message =
+                                SmsMessage(address, 'Data:INIT:$deviceName&$uid&');
+                            message.onStateChanged.listen((state) {
+                              if (state == SmsMessageState.Sent) {
+                                print("SMS is sent!");
+                              } else if (state == SmsMessageState.Delivered) {
+                                print("SMS is delivered!");
+                              }
+                            });
+                            sender.sendSms(message);
                           }
                         },
                         label: Text(

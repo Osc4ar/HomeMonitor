@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sms/sms.dart';
 
 class DeviceSettings extends StatefulWidget {
   static const routeName = '/deviceSettings';
@@ -156,7 +157,20 @@ class _DeviceSettingsState extends State<DeviceSettings> {
                         color: Colors.cyan,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(50.0)),
-                        onPressed: () {},
+                        onPressed: () {
+                          SmsSender sender = SmsSender();
+                          String address = '+525530444231';
+                          SmsMessage message =
+                              SmsMessage(address, 'Data:SCHEDULE');
+                          message.onStateChanged.listen((state) {
+                            if (state == SmsMessageState.Sent) {
+                              print("SMS is sent!");
+                            } else if (state == SmsMessageState.Delivered) {
+                              print("SMS is delivered!");
+                            }
+                          });
+                          sender.sendSms(message);
+                        },
                         label: Text(
                           'Guardar',
                           style: TextStyle(fontSize: 18),
