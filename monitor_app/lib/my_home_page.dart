@@ -3,6 +3,7 @@ import 'device_screen.dart';
 import 'message_screen.dart';
 import 'register_device_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:sms/sms.dart';
 
 class MyHomePage extends StatefulWidget {
   static const routeName = '/home';
@@ -55,7 +56,19 @@ class _MyHomePageState extends State<MyHomePage> {
     if (sectionId == 0) {
       return <Widget>[
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            SmsSender sender = SmsSender();
+            String address = '+525530444231';
+            SmsMessage message = SmsMessage(address, 'Data:PHOTO');
+            message.onStateChanged.listen((state) {
+              if (state == SmsMessageState.Sent) {
+                print("SMS is sent!");
+              } else if (state == SmsMessageState.Delivered) {
+                print("SMS is delivered!");
+              }
+            });
+            sender.sendSms(message);
+          },
           icon: Icon(Icons.camera_alt),
         ),
       ];
