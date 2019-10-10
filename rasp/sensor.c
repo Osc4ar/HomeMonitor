@@ -55,10 +55,10 @@ void checkSchedule();
 int main(){
 
 	fd = config_serial( "/dev/ttyACM0", B9600 );
-	iniGSM(fd);
-	deleteAllMessages(fd);
+	iniGSM();
+	deleteAllMessages();
 	while(!isConfigured()){
-		readMessages(fd);
+		readMessages();
 		sleep(1);
 	}
     getSchedule();
@@ -66,7 +66,7 @@ int main(){
         checkSchedule();
 
         workInProgress = 1;
-		readMessages(fd);
+		readMessages();
         workInProgress = 0;
         
 		delay(2000);	
@@ -135,15 +135,15 @@ void sendMessage(char *number, char *message){
         read(fd,salida,sizeof(char));
 }
 void iniGSM(){
-	writeCommand("AT\r\n",fd, "OK\r\n",4);	
-	writeCommand("ATE0\r\n",fd, "OK\r\n",6);	
+	writeCommand("AT\r\n", "OK\r\n",4);	
+	writeCommand("ATE0\r\n", "OK\r\n",6);	
 }
 ssize_t writeCommand(char * message,char * waited, char tam){
 	char output[tam];
 	memset(output,0,sizeof(char)*tam);
 	ssize_t written;
 	written = write(fd,message,sizeof(message) + 1);
-	if(!readAllResponse(output,fd,waited,tam)){
+	if(!readAllResponse(output,waited,tam)){
 		memset(output,0,sizeof(char)*tam);
 		written = write(fd,message,sizeof(message) + 1);
 	}
@@ -178,19 +178,19 @@ void readMessages(){
 	read(fd,raw_message,sizeof(char) * 200);
 	Message m = getMessage(raw_message);
 	if(m.id != '0'){
-		deleteMessage(fd,'1');
+		deleteMessage('1');
 		switch(processMessage(m)){
 		case 1:
-			sendMessage(fd, m.number, "Usuario Creado Correctamente");
+			sendMessage( m.number, "Usuario Creado Correctamente");
 			break;
 		case 2:
-			sendMessage(fd,m.number, "Capturando Fotografia");
+			sendMessage(m.number, "Capturando Fotografia");
 			break;
 		case 3:
-			sendMessage(fd,m.number, "Horario Asignado");
+			sendMessage(m.number, "Horario Asignado");
 			break;
 		default:
-			sendMessage(fd,m.number, "Comando Invalido"); 
+			sendMessage(m.number, "Comando Invalido"); 
 			break;	
 		}
 	sleep(1);
@@ -296,7 +296,7 @@ void onHall(void) {
                 if (currentState == LOW) {
                     char number[12];
                     getNumber(number);
-                    sendMessage(char *number, "Presencia detectada con sensor HALL")
+                    sendMessage(number, "Presencia detectada con sensor HALL");
                     workInProgress = 1;
                     takePicture();
                     workInProgress = 0;
@@ -315,7 +315,7 @@ void onPIR(void) {
                 if (currentState == LOW) {
                     char number[12];
                     getNumber(number);
-                    sendMessage(char *number, "Presencia detectada con sensor PIR")
+                    sendMessage(number, "Presencia detectada con sensor PIR");
                     workInProgress = 1;
                     takePicture();
                     workInProgress = 0;
@@ -332,7 +332,7 @@ void getSchedule(){
     FILE *arch;
 	arch = fopen("schedule", "r");
 	fgets(handle, sizeof(char)*5, arch);
-    start = (int) strtol(handle, (char **)NULL, 10);
+    startH = (int) strtol(handle, (char **)NULL, 10);
     fgets(handle, sizeof(char)*5, arch);
     endH = (int) strtol(handle, (char **)NULL, 10);
     fgets(handle, sizeof(char)*2, arch);
@@ -341,5 +341,5 @@ void getSchedule(){
     HALL = (int) strtol(handle, (char **)NULL, 10);
 }
 void checkSchedule(){
-    ;
+    available = 1;
 }
