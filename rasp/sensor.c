@@ -11,7 +11,7 @@
 #include <sys/wait.h>
 #include <netinet/in.h>
 #include <wiringPi.h>
-
+#include <time.h>
 #define PIN_HALL 7
 #define PIN_PIR 3
 
@@ -341,5 +341,14 @@ void getSchedule(){
     HALL = (int) strtol(handle, (char **)NULL, 10);
 }
 void checkSchedule(){
-    available = 1;
+	time_t rawtime;
+	struct tm * timeinfo;
+	time ( &rawtime );
+	timeinfo = localtime ( &rawtime );
+	short hora = timeinfo->tm_hour*100 + timeinfo->tm_min;
+	if(hora >= startH && hora <= endH){
+		available = 1;
+	}else{
+		available = 0;
+	}
 }
