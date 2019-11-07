@@ -70,6 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
             sender.sendSms(message);
           },
           icon: Icon(Icons.camera_alt),
+          tooltip: 'Tomar fotografía',
         ),
       ];
     } else if (sectionId == 1) {
@@ -140,7 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ));
           },
           backgroundColor: Colors.white,
-          tooltip: 'Capturar fotografía',
+          tooltip: 'Filtrar mensajes',
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

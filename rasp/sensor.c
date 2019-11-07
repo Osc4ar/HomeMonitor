@@ -165,8 +165,8 @@ void getNumber(char *number){
 	fgets(number, sizeof(int)*12, arch);
 }
 int isConfigured(){
-	if( access( "name", F_OK ) != -1 ) 
-		return 1;
+	if( access( "name", F_OK ) != -1 && access("schedule", F_OK) != -1) 
+		return 1; 
 	return 0;
 }
 void readMessages(){

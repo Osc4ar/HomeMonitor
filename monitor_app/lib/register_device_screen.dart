@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:sms/sms.dart';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
+
 class RegisterDeviceScreen extends StatefulWidget {
   static const routeName = '/registerDevice';
+  final FirebaseApp firebaseApp;
+  final String uid;
+
+  RegisterDeviceScreen({this.firebaseApp, this.uid});
+
   @override
   _RegisterDeviceScreenState createState() => _RegisterDeviceScreenState();
 }
@@ -12,6 +20,23 @@ class _RegisterDeviceScreenState extends State<RegisterDeviceScreen> {
   String phoneNo;
   String deviceName;
   String uid = '0IGpb0vjhbNhZLewS3yseIbP4gc2';
+  
+  DatabaseReference deviceRef;
+
+  @override
+  void initState() {
+    super.initState();
+    final FirebaseDatabase database = FirebaseDatabase(app: widget.firebaseApp);
+    deviceRef = database.reference().child('devices/${widget.uid}');
+  }
+
+  addDevice(String name, String phone) async {
+    deviceRef.child(name).set(<String, String> {
+      'phone': phone,
+    }).then((_) {
+      print('Device comitted');
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,11 +132,12 @@ class _RegisterDeviceScreenState extends State<RegisterDeviceScreen> {
                         onPressed: () {
                           // Validate will return true if the form is valid, or false if
                           // the form is invalid.
+                          addDevice(deviceName, phoneNo);
                           if (_formKey.currentState.validate()) {
                             SmsSender sender = SmsSender();
-                            String address = '+525530444231';
+                            String address = phoneNo;
                             SmsMessage message =
-                                SmsMessage(address, 'Data:INIT:$deviceName&$uid&');
+                                SmsMessage(address, 'Data:INIT$deviceName&$uid&');
                             message.onStateChanged.listen((state) {
                               if (state == SmsMessageState.Sent) {
                                 print("SMS is sent!");
