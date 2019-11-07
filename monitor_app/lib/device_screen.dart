@@ -56,7 +56,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
         itemBuilder: (BuildContext context, DataSnapshot snapshot, Animation<double> animation, int index) {
           print('device: $index');
           return Container(
-            margin: EdgeInsets.only(left: 10.0, right: 10.0),
+            margin: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0),
             height: MediaQuery.of(context).size.height/10,
             child: RaisedButton.icon(
               icon: Icon(Icons.developer_board),
